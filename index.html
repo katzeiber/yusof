@@ -109,6 +109,18 @@
         transform: translateY(-2px);
       }
 
+      /* Pastikan button selalu bisa diklik di mobile */
+      @media (max-width: 768px) {
+        .btn-purple {
+          pointer-events: auto; /* pastikan bisa di-touch */
+          z-index: 10; /* di atas elemen lain */
+        }
+
+        .btn-purple:hover {
+          transform: none; /* matikan hover di mobile agar tidak membingungkan */
+        }
+      }
+
       /* About */
       #about {
         background-color: #fafafa;
@@ -886,7 +898,7 @@
     </section>
 
     <!-- WhatsApp -->
-    <div class="wa-bubble" id="waBubble" aria-hidden="true">
+    <div class="wa-bubble" id="waBubble">
       <!-- panel -->
       <div
         class="wa-panel"
@@ -985,15 +997,25 @@
           checkScroll();
           window.addEventListener("scroll", checkScroll);
 
-          btn?.addEventListener("click", () => {
-            panel.classList.toggle("open");
-            if (panel.classList.contains("open"))
-              setTimeout(() => msgInput.focus(), 150);
+          closeBtn?.addEventListener("click", () => {
+            panel.classList.remove("open");
+            bubble.setAttribute("aria-hidden", "true");
+            bubble.setAttribute("inert", "");
           });
 
-          closeBtn?.addEventListener("click", () =>
-            panel.classList.remove("open")
-          );
+          btn?.addEventListener("click", () => {
+            const isOpen = panel.classList.toggle("open");
+            if (isOpen) {
+              bubble.removeAttribute("inert");
+              setTimeout(() => {
+                bubble.setAttribute("aria-hidden", "false");
+                msgInput.focus();
+              }, 100);
+            } else {
+              bubble.setAttribute("aria-hidden", "true");
+              bubble.setAttribute("inert", "");
+            }
+          });
 
           sendBtn?.addEventListener("click", () => {
             const text = encodeURIComponent(
